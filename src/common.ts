@@ -2,18 +2,26 @@ import { ApolloServer } from '@apollo/server';
 import { startStandaloneServer } from '@apollo/server/standalone';
 import { buildSubgraphSchema } from '@apollo/subgraph';
 import { ApolloServerPluginUsageReportingDisabled, ApolloServerPluginInlineTraceDisabled } from '@apollo/server/plugin/disabled';
-import { DocumentNode } from 'graphql';
+import { DocumentNode, print } from 'graphql';
 import { GraphQLResolverMap } from '@apollo/subgraph/dist/schema-helper';
+import { loggerPlugin } from './logger';
 
 export const isDefined = <T>(arg?: null | T) => arg !== undefined && arg !== null;
 
-export const run = async (typeDefs: DocumentNode | DocumentNode[], resolvers: GraphQLResolverMap<unknown>, port: number) => {
+export const run = async (
+  typeDefs: DocumentNode | DocumentNode[],
+  resolvers: GraphQLResolverMap<unknown>,
+  port: number,
+  subgraphName: string
+) => {
   const server = new ApolloServer({
     schema: buildSubgraphSchema({ typeDefs, resolvers }),
-    plugins: [ApolloServerPluginUsageReportingDisabled(), ApolloServerPluginInlineTraceDisabled()],
+    plugins: [ApolloServerPluginUsageReportingDisabled(), ApolloServerPluginInlineTraceDisabled(), loggerPlugin(subgraphName)],
   });
 
-  return startStandaloneServer(server, {
+  const { url } = await startStandaloneServer(server, {
     listen: { port },
   });
+
+  console.log(`🚀 ${subgraphName} ready at ${url}`);
 };

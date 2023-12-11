@@ -55,7 +55,4 @@ const resolvers = {
   },
 };
 
-export const runA = async () => {
-  const { url } = await run(typeDefs, resolvers, 3001);
-  console.log(`🚀 SubgraphA ready at ${url}`);
-};
+export const runA = () => run(typeDefs, resolvers, 3001, 'SubgraphA');
