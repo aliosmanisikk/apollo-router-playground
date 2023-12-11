@@ -1,0 +1,24 @@
+{
+  "name": "subgraph",
+  "version": "1.0.0",
+  "main": "index.js",
+  "license": "MIT",
+  "scripts": {
+    "subgraphs": "npx ts-node ./src/index.ts",
+    "router": "rover dev --supergraph-config supergraph.yaml",
+    "start": "yarn run subgraphs &  yarn run router"
+  },
+  "devDependencies": {
+    "@types/node": "^20.10.4",
+    "env-cmd": "^10.1.0",
+    "nodemon": "^3.0.2",
+    "ts-node": "^10.9.1",
+    "typescript": "^5.3.3"
+  },
+  "dependencies": {
+    "@apollo/server": "^4.9.5",
+    "@apollo/subgraph": "^2.6.1",
+    "graphql": "^16.8.1",
+    "graphql-tag": "^2.12.6"
+  }
+}
