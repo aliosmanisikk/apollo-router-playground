@@ -24,4 +24,6 @@ export const run = async (
   });
 
   console.log(`🚀 ${subgraphName} ready at ${url}`);
+
+  return server;
 };
