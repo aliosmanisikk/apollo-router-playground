@@ -3,7 +3,7 @@ import { run } from './common';
 
 // The GraphQL schema
 const typeDefs = gql`
-  extend schema @link(url: "https://specs.apollo.dev/federation/v2.4", import: ["@key", "@interfaceObject"])
+  extend schema @link(url: "https://specs.apollo.dev/federation/v2.6", import: ["@key", "@interfaceObject", "@requiresScopes", "@policy"])
 
   type Media @key(fields: "id", resolvable: false) @interfaceObject {
     id: ID!
@@ -12,7 +12,7 @@ const typeDefs = gql`
   extend type Query {
     medias: [Media!]!
     media(id: String!): Media!
-    subscriptions: [Subscription!]!
+    subscriptions: [Subscription!]! @requiresScopes(scopes: [["read:order"]])
   }
 
   type SubscriptionOrder {

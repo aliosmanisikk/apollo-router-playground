@@ -3,7 +3,7 @@ import { isDefined, run } from './common';
 
 // The GraphQL schema
 const typeDefs = gql`
-  extend schema @link(url: "https://specs.apollo.dev/federation/v2.4", import: ["@key"])
+  extend schema @link(url: "https://specs.apollo.dev/federation/v2.6", import: ["@key"])
 
   interface Media @key(fields: "id") {
     id: ID!
