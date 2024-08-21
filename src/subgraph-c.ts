@@ -5,19 +5,16 @@ import { run } from './common';
 const typeDefs = gql`
   extend schema @link(url: "https://specs.apollo.dev/federation/v2.8", import: ["@key", "@shareable", "@interfaceObject"])
 
-  type Media @key(fields: "id", resolvable: false) @interfaceObject {
+  type Media @key(fields: "id") @interfaceObject {
     id: ID!
-  }
-
-  extend type Query {
-    myMedias: [Media!]!
+    extraField: String!
   }
 `;
 
 // A map of functions which return data for the schema.
 const resolvers = {
-  Query: {
-    myMedias: () => [{ id: '1' }, { id: '2' }, { id: '3' }],
+  Media: {
+    extraField: () => 'Extra Field',
   },
 };
 
