@@ -3,7 +3,8 @@ import { run } from './common';
 
 // The GraphQL schema
 const typeDefs = gql`
-  extend schema @link(url: "https://specs.apollo.dev/federation/v2.6", import: ["@key", "@interfaceObject", "@requiresScopes", "@policy"])
+  extend schema
+    @link(url: "https://specs.apollo.dev/federation/v2.8", import: ["@key", "@shareable", "@interfaceObject", "@requiresScopes", "@policy"])
 
   type Media @key(fields: "id", resolvable: false) @interfaceObject {
     id: ID!
@@ -12,21 +13,6 @@ const typeDefs = gql`
   extend type Query {
     medias: [Media!]!
     media(id: String!): Media!
-    subscriptions: [Subscription!]! @requiresScopes(scopes: [["read:order"]])
-  }
-
-  type SubscriptionOrder {
-    id: String!
-    state: String!
-  }
-
-  input SubscriptionOrderInput {
-    size: Int = 1
-  }
-
-  type Subscription {
-    id: String
-    orders(input: SubscriptionOrderInput! = {}): [SubscriptionOrder!]!
   }
 `;
 
@@ -37,34 +23,6 @@ const resolvers = {
     media: (_: unknown, { id }: { id: string }) => ({
       id,
     }),
-    subscriptions: () => [
-      {
-        id: '1',
-        orders: [
-          { id: '1', state: 'Shipped' },
-          { id: '2', state: 'Pending' },
-        ],
-      },
-      {
-        id: '2',
-        orders: [
-          { id: '1', state: 'Shipped' },
-          { id: '2', state: 'Pending' },
-        ],
-      },
-      {
-        id: '3',
-        orders: [
-          { id: '1', state: 'Shipped' },
-          { id: '2', state: 'Pending' },
-        ],
-      },
-    ],
-  },
-  Subscription: {
-    orders: (parent: { orders: unknown[] }, { input }: { input: { size: number } }) => {
-      return parent.orders.slice(0, input.size);
-    },
   },
 };
 

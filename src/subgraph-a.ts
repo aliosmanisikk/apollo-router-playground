@@ -3,28 +3,28 @@ import { isDefined, run } from './common';
 
 // The GraphQL schema
 const typeDefs = gql`
-  extend schema @link(url: "https://specs.apollo.dev/federation/v2.6", import: ["@key"])
+  extend schema @link(url: "https://specs.apollo.dev/federation/v2.8", import: ["@key"])
 
   interface Media @key(fields: "id") {
     id: ID!
-    title: String!
+    title: String
   }
 
   type Book implements Media @key(fields: "id") {
     id: ID!
-    title: String!
+    title: String
     numberOfPages: Int!
   }
 
   type Album implements Media @key(fields: "id") {
     id: ID!
-    title: String!
+    title: String
     numberOfSongs: Int!
   }
 
   type Magazine implements Media @key(fields: "id") {
     id: ID!
-    title: String!
+    title: String
     numberOfSections: Int!
   }
 `;
