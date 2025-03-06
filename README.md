@@ -1,3 +1,9 @@
+## Install rover
+
+```
+npm install -g @apollo/rover
+```
+
 ## Run with Apollo Keys to make use of enterprise features
 
 ```
