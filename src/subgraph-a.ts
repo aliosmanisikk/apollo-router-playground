@@ -3,41 +3,61 @@ import { isDefined, run } from './common';
 
 // The GraphQL schema
 const typeDefs = gql`
-  extend schema @link(url: "https://specs.apollo.dev/federation/v2.8", import: ["@key"])
+  extend schema @link(url: "https://specs.apollo.dev/federation/v2.10", import: ["@key"])
+
+  type BookDetails {
+    numberOfPages: Int!
+  }
+
+  type AlbumDetails {
+    numberOfSongs: Int!
+  }
+
+  type MagazineDetails {
+    numberOfSections: Int!
+  }
+
+  union MediaDetails = BookDetails | AlbumDetails | MagazineDetails
 
   interface Media @key(fields: "id") {
     id: ID!
-    title: String
+    typeDetails: MediaDetails
   }
 
   type Book implements Media @key(fields: "id") {
     id: ID!
     title: String
-    numberOfPages: Int!
+    typeDetails: BookDetails
   }
 
   type Album implements Media @key(fields: "id") {
     id: ID!
     title: String
-    numberOfSongs: Int!
+    typeDetails: AlbumDetails
   }
 
   type Magazine implements Media @key(fields: "id") {
     id: ID!
     title: String
-    numberOfSections: Int!
+    typeDetails: MagazineDetails
+  }
+
+  type Store @key(fields: "code") @key(fields: "globalStoreId") {
+    code: String!
+    globalStoreId: String!
+    name: String!
   }
 `;
 
 // A map of functions which return data for the schema.
 const resolvers = {
   Media: {
-    __resolveType: async (media: { numberOfPages?: number; numberOfSongs?: number; numberOfSections?: number }) => {
-      if (isDefined(media.numberOfPages)) {
+    __resolveType: async (media: { typeDetails: { numberOfPages?: number; numberOfSongs?: number; numberOfSections?: number } }) => {
+      if (isDefined(media.typeDetails.numberOfPages)) {
         return 'Book';
-      } else if (isDefined(media.numberOfSongs)) {
+      } else if (isDefined(media.typeDetails.numberOfSongs)) {
         return 'Album';
-      } else if (isDefined(media.numberOfSections)) {
+      } else if (isDefined(media.typeDetails.numberOfSections)) {
         return 'Magazine';
       }
       return null;
@@ -45,12 +65,23 @@ const resolvers = {
 
     __resolveReference: async ({ id }: { id: string }) => {
       if (id === '1') {
-        return { id, title: 'Lord of the rings', numberOfPages: 555 };
+        return { id, title: 'Lord of the rings', typeDetails: { __typename: 'BookDetails', numberOfPages: 555 } };
       } else if (id === '2') {
-        return { id, title: 'Thriller', numberOfSongs: 9 };
+        return { id, title: 'Thriller', typeDetails: { __typename: 'AlbumDetails', numberOfSongs: 9 } };
       }
 
-      return { id, title: 'Ok', numberOfSections: 5 };
+      return { id, title: 'Ok', typeDetails: { __typename: 'MagazineDetails', numberOfSections: 5 } };
+    },
+  },
+  Store: {
+    __resolveReference: async ({ code, globalStoreId }: { code?: string; globalStoreId?: string }) => {
+      if (code) {
+        return { code, globalStoreId: 'id', name: 'Resolved by code' };
+      } else if (globalStoreId) {
+        return { code: 'code', globalStoreId, name: 'Resolved by globalStoreId' };
+      }
+
+      return undefined;
     },
   },
 };

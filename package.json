@@ -6,20 +6,20 @@
   "scripts": {
     "subgraphs": "npx ts-node ./src/index.ts",
     "router": "rover dev --supergraph-config supergraph.yaml",
-    "start": "yarn run subgraphs &  yarn run router"
+    "start": "yarn run subgraphs & sleep 5 && yarn run router"
   },
   "devDependencies": {
-    "@types/node": "^22.4.2",
+    "@types/node": "^22.13.9",
     "env-cmd": "^10.1.0",
-    "nodemon": "^3.1.4",
-    "prettier": "^3.3.3",
+    "nodemon": "^3.1.9",
+    "prettier": "^3.5.3",
     "ts-node": "^10.9.2",
-    "typescript": "^5.5.4"
+    "typescript": "^5.8.2"
   },
   "dependencies": {
-    "@apollo/server": "^4.11.0",
-    "@apollo/subgraph": "^2.8.4",
-    "graphql": "^16.9.0",
+    "@apollo/server": "^4.11.3",
+    "@apollo/subgraph": "^2.10.0",
+    "graphql": "^16.10.0",
     "graphql-tag": "^2.12.6"
   }
 }
