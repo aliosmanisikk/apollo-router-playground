@@ -7,7 +7,7 @@ const globalStoreIdEnabled = true;
 const typeDefs = gql`
   extend schema
     @link(
-      url: "https://specs.apollo.dev/federation/v2.10"
+      url: "https://specs.apollo.dev/federation/v2.11"
       import: ["@key", "@shareable", "@interfaceObject", "@requiresScopes", "@policy", "@external", "@provides"]
     )
 

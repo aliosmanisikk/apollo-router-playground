@@ -4,22 +4,23 @@
   "main": "index.js",
   "license": "MIT",
   "scripts": {
-    "subgraphs": "npx ts-node ./src/index.ts",
-    "router": "rover dev --supergraph-config supergraph.yaml",
-    "start": "yarn run subgraphs & sleep 5 && yarn run router"
+    "subgraphs": "ts-node ./src/index.ts",
+    "router": "sh -c 'sleep 5 && rover dev --supergraph-config supergraph.yaml'",
+    "start": "concurrently -k -s first -n subgraphs,router \"yarn subgraphs\" \"yarn router\""
   },
   "devDependencies": {
-    "@types/node": "^22.13.9",
+    "@types/node": "^24.0.3",
+    "concurrently": "^9.1.2",
     "env-cmd": "^10.1.0",
-    "nodemon": "^3.1.9",
+    "nodemon": "^3.1.10",
     "prettier": "^3.5.3",
     "ts-node": "^10.9.2",
-    "typescript": "^5.8.2"
+    "typescript": "^5.8.3"
   },
   "dependencies": {
-    "@apollo/server": "^4.11.3",
-    "@apollo/subgraph": "^2.10.0",
-    "graphql": "^16.10.0",
+    "@apollo/server": "^4.12.2",
+    "@apollo/subgraph": "^2.11.0",
+    "graphql": "^16.11.0",
     "graphql-tag": "^2.12.6"
   }
 }

@@ -6,6 +6,8 @@ npm install -g @apollo/rover
 
 ## Run with Apollo Keys to make use of enterprise features
 
+Rename .env.example to .env and fill in APOLLO_KEY . It must be service key. You can use IOWL one.
+
 ```
 source .env && yarn start
 ```
