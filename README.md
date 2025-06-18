@@ -9,6 +9,7 @@ npm install -g @apollo/rover
 Rename .env.example to .env and fill in APOLLO_KEY . It must be service key. You can use IOWL one.
 
 ```
+yarn install
 source .env && yarn start
 ```
 
