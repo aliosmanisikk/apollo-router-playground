@@ -41,12 +41,6 @@ const typeDefs = gql`
     title: String
     typeDetails: MagazineDetails
   }
-
-  type Store @key(fields: "code") @key(fields: "globalStoreId") {
-    code: String!
-    globalStoreId: String!
-    name: String!
-  }
 `;
 
 // A map of functions which return data for the schema.
@@ -71,17 +65,6 @@ const resolvers = {
       }
 
       return { id, title: 'Ok', typeDetails: { __typename: 'MagazineDetails', numberOfSections: 5 } };
-    },
-  },
-  Store: {
-    __resolveReference: async ({ code, globalStoreId }: { code?: string; globalStoreId?: string }) => {
-      if (code) {
-        return { code, globalStoreId: 'id', name: 'Resolved by code' };
-      } else if (globalStoreId) {
-        return { code: 'code', globalStoreId, name: 'Resolved by globalStoreId' };
-      }
-
-      return undefined;
     },
   },
 };

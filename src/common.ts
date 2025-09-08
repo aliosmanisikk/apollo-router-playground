@@ -2,7 +2,7 @@ import { ApolloServer } from '@apollo/server';
 import { startStandaloneServer } from '@apollo/server/standalone';
 import { buildSubgraphSchema } from '@apollo/subgraph';
 import { ApolloServerPluginUsageReportingDisabled, ApolloServerPluginInlineTraceDisabled } from '@apollo/server/plugin/disabled';
-import { DocumentNode, print } from 'graphql';
+import { DocumentNode } from 'graphql';
 import { GraphQLResolverMap } from '@apollo/subgraph/dist/schema-helper';
 import { loggerPlugin } from './logger';
 
