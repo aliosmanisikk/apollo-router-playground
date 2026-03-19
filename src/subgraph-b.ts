@@ -5,7 +5,7 @@ import { run } from './common';
 const typeDefs = gql`
   extend schema
     @link(
-      url: "https://specs.apollo.dev/federation/v2.11"
+      url: "https://specs.apollo.dev/federation/v2.12"
       import: ["@key", "@shareable", "@interfaceObject", "@requiresScopes", "@policy", "@external", "@provides"]
     )
 
@@ -17,6 +17,11 @@ const typeDefs = gql`
     medias: [Media!]!
     media(id: String!): Media!
   }
+
+  type Customer @key(fields: "email") @shareable {
+    email: String
+    title: String
+  }
 `;
 
 // A map of functions which return data for the schema.
@@ -25,6 +30,9 @@ const resolvers = {
     medias: () => [{ id: '1' }, { id: '2' }, { id: '3' }],
     media: (_: unknown, { id }: { id: string }) => ({ id }),
   },
+  Customer: {
+    title: ({ email }: { email: string }) => `Customer with email ${email}`,
+  },
 };
 
-export const runB = () => run(typeDefs, resolvers, 3002, 'SubgraphB');
+export const runB = () => run(typeDefs, resolvers, 3002, 'subgraph-b');

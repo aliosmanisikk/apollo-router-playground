@@ -3,7 +3,7 @@ import { isDefined, run } from './common';
 
 // The GraphQL schema
 const typeDefs = gql`
-  extend schema @link(url: "https://specs.apollo.dev/federation/v2.11", import: ["@key"])
+  extend schema @link(url: "https://specs.apollo.dev/federation/v2.12", import: ["@key", "@shareable", "@override"])
 
   type BookDetails {
     numberOfPages: Int!
@@ -41,6 +41,16 @@ const typeDefs = gql`
     title: String
     typeDetails: MagazineDetails
   }
+
+  type Customer @key(fields: "id") @shareable {
+    id: ID!
+    name: String
+    email: String @override(from: "subgraph-c")
+  }
+
+  extend type Query {
+    customer: Customer!
+  }
 `;
 
 // A map of functions which return data for the schema.
@@ -67,6 +77,9 @@ const resolvers = {
       return { id, title: 'Ok', typeDetails: { __typename: 'MagazineDetails', numberOfSections: 5 } };
     },
   },
+  Query: {
+    customer: (_: unknown, __: unknown) => ({ id: 'my id', name: `Customer my id` }),
+  },
 };
 
-export const runA = () => run(typeDefs, resolvers, 3001, 'SubgraphA');
+export const runA = () => run(typeDefs, resolvers, 3001, 'subgraph-a');

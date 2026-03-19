@@ -9,18 +9,18 @@
     "start": "concurrently -k -s first -n subgraphs,router \"yarn subgraphs\" \"yarn router\""
   },
   "devDependencies": {
-    "@types/node": "^24.3.1",
+    "@types/node": "^25.5.0",
     "concurrently": "^9.2.1",
     "env-cmd": "^11.0.0",
-    "nodemon": "^3.1.10",
-    "prettier": "^3.6.2",
+    "nodemon": "^3.1.14",
+    "prettier": "^3.8.1",
     "ts-node": "^10.9.2",
-    "typescript": "^5.9.2"
+    "typescript": "^5.9.3"
   },
   "dependencies": {
-    "@apollo/server": "^5.0.0",
-    "@apollo/subgraph": "^2.11.2",
-    "graphql": "^16.11.0",
+    "@apollo/server": "^5.4.0",
+    "@apollo/subgraph": "^2.13.2",
+    "graphql": "^16.13.1",
     "graphql-tag": "^2.12.6"
   }
 }
