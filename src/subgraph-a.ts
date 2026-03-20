@@ -1,9 +1,13 @@
-import { gql } from 'graphql-tag';
-import { isDefined, run, withResolver } from './common';
+import { gql } from "graphql-tag";
+import { isDefined, run, withResolver } from "./common";
 
 // The GraphQL schema
 const typeDefs = gql`
-  extend schema @link(url: "https://specs.apollo.dev/federation/v2.12", import: ["@key", "@shareable", "@override"])
+  extend schema
+    @link(
+      url: "https://specs.apollo.dev/federation/v2.12"
+      import: ["@key", "@shareable", "@override"]
+    )
 
   type BookDetails {
     numberOfPages: Int!
@@ -57,34 +61,58 @@ const typeDefs = gql`
 const resolvers = {
   Media: {
     __resolveType: withResolver(
-      async (media: { typeDetails: { numberOfPages?: number; numberOfSongs?: number; numberOfSections?: number } }) => {
+      async (media: {
+        typeDetails: {
+          numberOfPages?: number;
+          numberOfSongs?: number;
+          numberOfSections?: number;
+        };
+      }) => {
         if (isDefined(media.typeDetails.numberOfPages)) {
-          return 'Book';
+          return "Book";
         } else if (isDefined(media.typeDetails.numberOfSongs)) {
-          return 'Album';
+          return "Album";
         } else if (isDefined(media.typeDetails.numberOfSections)) {
-          return 'Magazine';
+          return "Magazine";
         }
         return null;
       },
-      'Media.__resolveType'
+      "Media.__resolveType",
     ),
     __resolveReference: withResolver(async ({ id }: { id: string }) => {
-      if (id === '1') {
-        return { id, title: 'Lord of the rings', typeDetails: { __typename: 'BookDetails', numberOfPages: 555 } };
-      } else if (id === '2') {
-        return { id, title: 'Thriller', typeDetails: { __typename: 'AlbumDetails', numberOfSongs: 9 } };
+      if (id === "1") {
+        return {
+          id,
+          title: "Lord of the rings",
+          typeDetails: { __typename: "BookDetails", numberOfPages: 555 },
+        };
+      } else if (id === "2") {
+        return {
+          id,
+          title: "Thriller",
+          typeDetails: { __typename: "AlbumDetails", numberOfSongs: 9 },
+        };
       }
 
-      return { id, title: 'Ok', typeDetails: { __typename: 'MagazineDetails', numberOfSections: 5 } };
-    }, 'Media.__resolveReference'),
+      return {
+        id,
+        title: "Ok",
+        typeDetails: { __typename: "MagazineDetails", numberOfSections: 5 },
+      };
+    }, "Media.__resolveReference"),
   },
   Query: {
-    customer: withResolver(async (_: unknown, __: unknown) => ({ id: 'my id', name: `Customer my id` }), 'Query.customer'),
+    customer: withResolver(
+      async (_: unknown, __: unknown) => ({
+        id: "my id",
+        name: `Customer my id`,
+      }),
+      "Query.customer",
+    ),
   },
   Customer: {
-    id: withResolver(async () => 'id-field-resolver', 'Customer.id'),
+    id: withResolver(async () => "id-field-resolver", "Customer.id"),
   },
 };
 
-export const runA = () => run(typeDefs, resolvers, 3001, 'subgraph-a');
+export const runA = () => run(typeDefs, resolvers, 3001, "subgraph-a");
