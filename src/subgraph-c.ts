@@ -1,5 +1,5 @@
 import { gql } from 'graphql-tag';
-import { run } from './common';
+import { run, withResolver } from './common';
 
 // The GraphQL schema
 const typeDefs = gql`
@@ -17,12 +17,12 @@ const typeDefs = gql`
 
 // A map of functions which return data for the schema.
 const resolvers = {
-  Media: { extraField: () => 'Extra Field' },
+  Media: { extraField: withResolver(async () => 'Extra Field', 'Media.extraField') },
   Customer: {
-    email: async ({ id }: { id: string }) => {
+    email: withResolver(async ({ id }: { id: string }) => {
       await new Promise((resolve) => setTimeout(resolve, 100)); // Simulate async operation
       return `customer${id}@example.com`;
-    },
+    }, 'Customer.email'),
   },
 };
 

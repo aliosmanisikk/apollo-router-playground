@@ -27,3 +27,11 @@ export const run = async (
 
   return server;
 };
+
+type AsyncFn<Args extends unknown[], R> = (...args: Args) => Promise<R>;
+export const withResolver =
+  <TArgs extends unknown[], R>(resolver: AsyncFn<TArgs, R>, resolverName: string) =>
+  (...args: TArgs) => {
+    console.log(`Resolver called ${resolverName}`);
+    return resolver(...args);
+  };

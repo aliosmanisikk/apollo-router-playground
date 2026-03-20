@@ -1,5 +1,5 @@
 import { gql } from 'graphql-tag';
-import { run } from './common';
+import { run, withResolver } from './common';
 
 // The GraphQL schema
 const typeDefs = gql`
@@ -27,11 +27,11 @@ const typeDefs = gql`
 // A map of functions which return data for the schema.
 const resolvers = {
   Query: {
-    medias: () => [{ id: '1' }, { id: '2' }, { id: '3' }],
-    media: (_: unknown, { id }: { id: string }) => ({ id }),
+    medias: withResolver(async () => [{ id: '1' }, { id: '2' }, { id: '3' }], 'Query.medias'),
+    media: withResolver(async (_: unknown, { id }: { id: string }) => ({ id }), 'Query.media'),
   },
   Customer: {
-    title: ({ email }: { email: string }) => `Customer with email ${email}`,
+    title: withResolver(async ({ email }: { email: string }) => `Customer with email ${email}`, 'Customer.title'),
   },
 };
 

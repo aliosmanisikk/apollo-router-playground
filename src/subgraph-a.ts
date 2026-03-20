@@ -1,5 +1,5 @@
 import { gql } from 'graphql-tag';
-import { isDefined, run } from './common';
+import { isDefined, run, withResolver } from './common';
 
 // The GraphQL schema
 const typeDefs = gql`
@@ -56,18 +56,20 @@ const typeDefs = gql`
 // A map of functions which return data for the schema.
 const resolvers = {
   Media: {
-    __resolveType: async (media: { typeDetails: { numberOfPages?: number; numberOfSongs?: number; numberOfSections?: number } }) => {
-      if (isDefined(media.typeDetails.numberOfPages)) {
-        return 'Book';
-      } else if (isDefined(media.typeDetails.numberOfSongs)) {
-        return 'Album';
-      } else if (isDefined(media.typeDetails.numberOfSections)) {
-        return 'Magazine';
-      }
-      return null;
-    },
-
-    __resolveReference: async ({ id }: { id: string }) => {
+    __resolveType: withResolver(
+      async (media: { typeDetails: { numberOfPages?: number; numberOfSongs?: number; numberOfSections?: number } }) => {
+        if (isDefined(media.typeDetails.numberOfPages)) {
+          return 'Book';
+        } else if (isDefined(media.typeDetails.numberOfSongs)) {
+          return 'Album';
+        } else if (isDefined(media.typeDetails.numberOfSections)) {
+          return 'Magazine';
+        }
+        return null;
+      },
+      'Media.__resolveType'
+    ),
+    __resolveReference: withResolver(async ({ id }: { id: string }) => {
       if (id === '1') {
         return { id, title: 'Lord of the rings', typeDetails: { __typename: 'BookDetails', numberOfPages: 555 } };
       } else if (id === '2') {
@@ -75,10 +77,13 @@ const resolvers = {
       }
 
       return { id, title: 'Ok', typeDetails: { __typename: 'MagazineDetails', numberOfSections: 5 } };
-    },
+    }, 'Media.__resolveReference'),
   },
   Query: {
-    customer: (_: unknown, __: unknown) => ({ id: 'my id', name: `Customer my id` }),
+    customer: withResolver(async (_: unknown, __: unknown) => ({ id: 'my id', name: `Customer my id` }), 'Query.customer'),
+  },
+  Customer: {
+    id: withResolver(async () => 'id-field-resolver', 'Customer.id'),
   },
 };
 
