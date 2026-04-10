@@ -5,49 +5,28 @@ import { run, withResolver } from "./common";
 const typeDefs = gql`
   extend schema
     @link(
-      url: "https://specs.apollo.dev/federation/v2.12"
-      import: [
-        "@key"
-        "@shareable"
-        "@interfaceObject"
-        "@requiresScopes"
-        "@policy"
-        "@external"
-        "@provides"
-      ]
+      url: "https://specs.apollo.dev/federation/v2.13"
+      import: ["@key", "@shareable"]
     )
 
-  type Media @key(fields: "id", resolvable: false) @interfaceObject {
-    id: ID!
-  }
-
-  extend type Query {
-    medias: [Media!]!
-    media(id: String!): Media!
+  type Profile @shareable {
+    title: String!
   }
 
   type Customer @key(fields: "email") @shareable {
-    email: String
-    title: String
+    email: String!
+    profile: Profile!
   }
 `;
 
 // A map of functions which return data for the schema.
 const resolvers = {
-  Query: {
-    medias: withResolver(
-      async () => [{ id: "1" }, { id: "2" }, { id: "3" }],
-      "Query.medias",
-    ),
-    media: withResolver(
-      async (_: unknown, { id }: { id: string }) => ({ id }),
-      "Query.media",
-    ),
-  },
   Customer: {
-    title: withResolver(
-      async ({ email }: { email: string }) => `Customer with email ${email}`,
-      "Customer.title",
+    profile: withResolver(
+      async ({ email }: { email: string }) => ({
+        title: `Customer with email ${email}`,
+      }),
+      "Customer.profile",
     ),
   },
 };

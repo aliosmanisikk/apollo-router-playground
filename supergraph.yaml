@@ -1,13 +1,17 @@
+federation_version: =2.13.0
+
 subgraphs:
   subgraph-a:
-    routing_url: http://localhost:3001/graphql/
+    routing_url: http://subgraphs:3001/graphql/
     schema:
-      subgraph_url: http://localhost:3001/graphql/
+      subgraph_url: http://subgraphs:3001/graphql/
+
   subgraph-b:
-    routing_url: http://localhost:3002/graphql/
+    routing_url: http://subgraphs:3002/graphql/
     schema:
-      subgraph_url: http://localhost:3002/graphql/
+      subgraph_url: http://subgraphs:3002/graphql/
+
   subgraph-c:
-    routing_url: http://localhost:3003/graphql/
+    routing_url: http://subgraphs:3003/graphql/
     schema:
-      subgraph_url: http://localhost:3003/graphql/
+      subgraph_url: http://subgraphs:3003/graphql/

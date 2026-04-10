@@ -4,23 +4,35 @@
   "main": "index.js",
   "license": "MIT",
   "scripts": {
-    "subgraphs": "ts-node ./src/index.ts",
-    "router": "sh -c 'sleep 5 && rover dev --supergraph-config supergraph.yaml'",
-    "start": "concurrently -k -s first -n subgraphs,router \"yarn subgraphs\" \"yarn router\""
+    "docker:up": "docker compose up -d --build",
+    "docker:down": "docker compose down",
+    "docker:build": "docker compose build",
+    "docker:rebuild": "docker compose build --no-cache",
+    "docker:restart": "docker compose down && docker compose up -d --build",
+    "docker:logs": "docker compose logs -f",
+    "docker:logs:router": "docker compose logs -f router",
+    "docker:logs:subgraphs": "docker compose logs -f subgraphs",
+    "docker:logs:rover": "docker compose logs -f rover",
+    "docker:logs:redis": "docker compose logs -f redis",
+    "docker:logs:jaeger": "docker compose logs -f jaeger",
+    "docker:status": "docker compose ps",
+    "docker:shell:router": "docker compose exec router sh",
+    "docker:shell:subgraphs": "docker compose exec subgraphs sh",
+    "docker:shell:redis": "docker compose exec redis sh",
+    "docker:routes": "curl -X POST http://localhost:4000/graphql -H 'Content-Type: application/json' -d '{\"query\":\"query{__typename}\"}'",
+    "docker:redis-cli": "docker compose exec redis redis-cli",
+    "docker:clean": "docker compose down -v"
   },
   "devDependencies": {
-    "@types/node": "^25.5.0",
-    "concurrently": "^9.2.1",
-    "env-cmd": "^11.0.0",
-    "nodemon": "^3.1.14",
+    "@types/node": "^25.5.2",
     "prettier": "^3.8.1",
     "ts-node": "^10.9.2",
-    "typescript": "^5.9.3"
+    "typescript": "^6.0.2"
   },
   "dependencies": {
-    "@apollo/server": "^5.4.0",
-    "@apollo/subgraph": "^2.13.2",
-    "graphql": "^16.13.1",
+    "@apollo/server": "^5.5.0",
+    "@apollo/subgraph": "^2.13.3",
+    "graphql": "^16.13.2",
     "graphql-tag": "^2.12.6"
   }
 }

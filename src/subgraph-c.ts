@@ -5,30 +5,23 @@ import { run, withResolver } from "./common";
 const typeDefs = gql`
   extend schema
     @link(
-      url: "https://specs.apollo.dev/federation/v2.12"
-      import: ["@key", "@shareable", "@interfaceObject", "@override"]
+      url: "https://specs.apollo.dev/federation/v2.13"
+      import: ["@key", "@shareable", "@external", "@requires"]
     )
-
-  type Media @key(fields: "id") @interfaceObject {
-    id: ID!
-    extraField: String!
-  }
 
   type Customer @key(fields: "id") @shareable {
     id: ID!
+    valid: Boolean!
   }
 `;
 
 // A map of functions which return data for the schema.
 const resolvers = {
-  Media: {
-    extraField: withResolver(async () => "Extra Field", "Media.extraField"),
-  },
   Customer: {
-    email: withResolver(async ({ id }: { id: string }) => {
-      await new Promise((resolve) => setTimeout(resolve, 100)); // Simulate async operation
-      return `customer${id}@example.com`;
-    }, "Customer.email"),
+    valid: withResolver(
+      async ({ id }: { id: string }) => id.endsWith("@example.com"),
+      "Customer.valid",
+    ),
   },
 };
 
