@@ -84,3 +84,37 @@ Shell and tools:
 - Subgraph A: http://localhost:3001/graphql
 - Subgraph B: http://localhost:3002/graphql
 - Subgraph C: http://localhost:3003/graphql
+
+## Redis
+
+Redis backs Apollo Router response cache. Most important commands:
+
+```bash
+# open interactive Redis CLI
+docker compose exec redis redis-cli
+
+# list cache keys
+docker compose exec redis redis-cli --scan --pattern 'local:router-service:*'
+
+# read one key (replace <key>)
+docker compose exec redis redis-cli GET '<key>'
+
+# check key TTL in seconds
+docker compose exec redis redis-cli TTL '<key>'
+```
+
+## Jaeger UI
+
+Jaeger is used for distributed tracing from Apollo Router and subgraphs.
+
+```bash
+# open Jaeger UI
+open http://localhost:16686
+```
+
+In Jaeger UI:
+
+- Select service: `apollo-router-playground` (or available router service)
+- Click `Find Traces`
+- Run a GraphQL query against `http://localhost:4000/graphql`
+- Refresh traces if needed
