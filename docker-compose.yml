@@ -1,0 +1,127 @@
+services:
+  # Jaeger all-in-one for tracing
+  jaeger:
+    image: jaegertracing/all-in-one:latest
+    container_name: apollo-jaeger
+    ports:
+      - "14268:14268" # HTTP collector for traces
+      - "16686:16686" # Jaeger UI
+      - "6831:6831/udp" # Jaeger agent for traces
+    environment:
+      - COLLECTOR_OTLP_ENABLED=true
+      - COLLECTOR_OTLP_HTTP_PORT=4317
+    networks:
+      - apollo-network
+    healthcheck:
+      test: ["CMD", "/go/bin/all-in-one-linux", "--help"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Redis for response caching
+  redis:
+    image: redis:7-alpine
+    container_name: apollo-redis
+    ports:
+      - "6379:6379"
+    command: redis-server --appendonly yes
+    volumes:
+      - redis-data:/data
+    networks:
+      - apollo-network
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Subgraphs (Node.js Apollo Server instances)
+  subgraphs:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: apollo-subgraphs
+    ports:
+      - "3001:3001"
+      - "3002:3002"
+      - "3003:3003"
+    environment:
+      - NODE_ENV=development
+    networks:
+      - apollo-network
+    depends_on:
+      - jaeger
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "node",
+          "-e",
+          'fetch(''http://localhost:3001/'',{method:''POST'',headers:{''content-type'':''application/json''},body:''{"query":"{__typename}"}''}).then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))',
+        ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Rover Compose - builds and composes the supergraph schema
+  rover:
+    build:
+      context: .
+      dockerfile: Dockerfile.rover
+    container_name: apollo-rover
+    command: sh -c "sleep 5 && rover supergraph compose --elv2-license accept --config supergraph.yaml --output /supergraph/playground.graphql && tail -f /dev/null"
+    volumes:
+      - ./supergraph.yaml:/app/supergraph.yaml:ro
+      - supergraph-data:/supergraph
+    environment:
+      - APOLLO_HOME=/tmp/apollo
+    networks:
+      - apollo-network
+    depends_on:
+      subgraphs:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "test", "-s", "/supergraph/playground.graphql"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Apollo Router
+  router:
+    image: ${ROUTER_IMAGE}
+    container_name: apollo-router
+    ports:
+      - "4000:4000"
+    volumes:
+      - ./router.yaml:/etc/apollo/router.yaml:ro
+      - supergraph-data:/supergraph:ro
+    environment:
+      - APOLLO_GRAPH_REF=${APOLLO_GRAPH_REF}
+      - APOLLO_KEY=${APOLLO_KEY}
+      - APOLLO_ROUTER_LOG_LEVEL=${APOLLO_ROUTER_LOG_LEVEL:-info}
+      - APOLLO_ROUTER_SUPERGRAPH_PATH=/supergraph/playground.graphql
+      - APOLLO_ROUTER_CONFIG_PATH=/etc/apollo/router.yaml
+      - SERVICE_NAME=apollo-router-playground
+      - TRACING_EXPORTER_URL=http://jaeger:4317
+      - REDIS_URL=redis://redis:6379
+      - NAMESPACE=local
+    command: --config /etc/apollo/router.yaml --supergraph /supergraph/playground.graphql
+    networks:
+      - apollo-network
+    depends_on:
+      rover:
+        condition: service_healthy
+      subgraphs:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      jaeger:
+        condition: service_healthy
+
+networks:
+  apollo-network:
+    driver: bridge
+
+volumes:
+  redis-data:
+  supergraph-data:

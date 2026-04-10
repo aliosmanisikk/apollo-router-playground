@@ -1,0 +1,81 @@
+supergraph:
+  listen: 0.0.0.0:4000
+  path: /graphql
+  introspection: true
+
+sandbox:
+  enabled: true
+
+# Sandbox requires the default landing page to be disabled.
+homepage:
+  enabled: false
+
+health_check:
+  listen: 0.0.0.0:4000
+  enabled: true
+
+headers:
+  all: # Header rules for all subgraphs
+    request:
+      - propagate:
+          matching: .*
+
+limits:
+  warn_only: true
+  parser_max_tokens: 8000
+  parser_max_recursion: 50
+
+include_subgraph_errors:
+  all: true # Propagate errors from all subgraphs
+
+telemetry:
+  apollo:
+    subgraph_metrics: true
+    metrics_reference_mode: extended
+    errors:
+      preview_extended_error_metrics: enabled
+      subgraph:
+        all:
+          send: true
+          redaction_policy: extended # (default: strict)
+  exporters:
+    tracing:
+      propagation:
+        trace_context: true
+      common:
+        service_name: ${env.SERVICE_NAME}
+        parent_based_sampler: true
+        sampler: always_on
+        max_attributes_per_event: 128
+        max_attributes_per_link: 128
+        max_attributes_per_span: 128
+        max_events_per_span: 128
+        max_links_per_span: 128
+      otlp:
+        enabled: true
+        protocol: grpc
+        endpoint: ${env.TRACING_EXPORTER_URL}
+        batch_processor:
+          max_export_batch_size: 512
+          max_concurrent_exports: 1
+          max_export_timeout: 30s
+          max_queue_size: 2048
+          scheduled_delay: 5s
+    metrics:
+      prometheus:
+        enabled: true
+        resource_selector: all # default: none
+        listen: 0.0.0.0:9090
+        path: /metrics
+response_cache:
+  enabled: true
+  subgraph:
+    all:
+      enabled: true
+      ttl: 0s
+      redis:
+        urls: ["${env.REDIS_URL}"]
+        namespace: "${env.NAMESPACE}:router-service"
+        required_to_start: false
+        fetch_timeout: 500ms
+        pool_size: 5
