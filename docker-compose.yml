@@ -69,10 +69,11 @@ services:
       context: .
       dockerfile: Dockerfile.rover
     container_name: apollo-rover
-    command: sh -c "sleep 5 && rover supergraph compose --elv2-license accept --config supergraph.yaml --output /supergraph/playground.graphql && tail -f /dev/null"
+    command: sh -c "rover supergraph compose --elv2-license accept --config supergraph.yaml --output /supergraph/playground.graphql && tail -f /dev/null"
     volumes:
       - ./supergraph.yaml:/app/supergraph.yaml:ro
       - supergraph-data:/supergraph
+      - rover-home:/tmp/apollo
     environment:
       - APOLLO_HOME=/tmp/apollo
     networks:
@@ -82,9 +83,10 @@ services:
         condition: service_healthy
     healthcheck:
       test: ["CMD", "test", "-s", "/supergraph/playground.graphql"]
-      interval: 10s
+      interval: 2s
       timeout: 5s
-      retries: 5
+      retries: 30
+      start_period: 2s
 
   # Apollo Router
   router:
@@ -125,3 +127,4 @@ networks:
 volumes:
   redis-data:
   supergraph-data:
+  rover-home:

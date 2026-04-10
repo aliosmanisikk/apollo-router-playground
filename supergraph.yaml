@@ -6,11 +6,6 @@ subgraphs:
     schema:
       subgraph_url: http://subgraphs:3001/graphql/
 
-  subgraph-b:
-    routing_url: http://subgraphs:3002/graphql/
-    schema:
-      subgraph_url: http://subgraphs:3002/graphql/
-
   subgraph-c:
     routing_url: http://subgraphs:3003/graphql/
     schema:
