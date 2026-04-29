@@ -5,7 +5,7 @@ import { run, withResolver } from "./common";
 const typeDefs = gql`
   extend schema
     @link(
-      url: "https://specs.apollo.dev/federation/v2.13"
+      url: "https://specs.apollo.dev/federation/v2.14"
       import: ["@key", "@shareable"]
     )
 
