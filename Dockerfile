@@ -24,14 +24,14 @@ WORKDIR /app
 # Install dumb-init for proper signal handling
 RUN apk add --no-cache dumb-init
 
+# Install ts-node globally for runtime
+RUN npm install -g ts-node @types/node
+
 # Copy from builder
 COPY --from=builder /app/node_modules ./node_modules
 COPY --from=builder /app/package.json ./
 COPY --from=builder /app/tsconfig.json ./
 COPY --from=builder /app/src ./src
-
-# Install ts-node globally for runtime
-RUN npm install -g ts-node @types/node
 
 # Default to running subgraphs
 CMD ["ts-node", "./src/index.ts"]
